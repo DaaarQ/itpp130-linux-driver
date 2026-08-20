@@ -1,0 +1,39 @@
+# Maintainer: DaaarQ <DaaarQ@users.noreply.github.com>
+pkgname=itpp130-linux-driver
+pkgver=1.0.1
+pkgrel=1
+pkgdesc="Linux CUPS driver for the Munbyn ITPP130 label printer (TSPL), reverse engineered from the vendor macOS/Windows drivers"
+arch=('x86_64' 'aarch64' 'armv7h' 'armv6h')
+url="https://github.com/DaaarQ/itpp130-linux-driver"
+license=('GPL-2.0-or-later')
+# libcups provides both libcups.so.2 and libcupsimage.so.2 on Arch
+depends=('cups>=2.4' 'cups-filters>=1.28' 'ghostscript' 'libcups' 'glibc>=2.34')
+makedepends=('gcc')
+checkdepends=('python')
+source=("$pkgname-$pkgver-src.tar.gz::https://github.com/DaaarQ/$pkgname/releases/download/v$pkgver/$pkgname-$pkgver-src.tar.gz")
+sha256sums=('@SOURCE_SHA256@')
+
+build() {
+  cd "$srcdir/$pkgname-$pkgver"
+  cc -O2 -Wall -Wno-deprecated-declarations \
+     -o rastertolabel-itpp130 rastertolabel-itpp130.c -lcups -lcupsimage
+}
+
+check() {
+  cd "$srcdir/$pkgname-$pkgver"
+  tests/run-tests.sh ./rastertolabel-itpp130
+}
+
+package() {
+  cd "$srcdir/$pkgname-$pkgver"
+  install -d "$pkgdir/usr/lib/cups/filter"
+  install -d "$pkgdir/usr/share/cups/model/munbyn"
+  install -d "$pkgdir/usr/share/doc/$pkgname"
+  install -m 755 rastertolabel-itpp130 "$pkgdir/usr/lib/cups/filter/"
+  install -m 755 gstoraster2tspl "$pkgdir/usr/lib/cups/filter/"
+  install -m 644 ITPP130-Label-printer.ppd \
+          "$pkgdir/usr/share/cups/model/munbyn/"
+  install -m 644 README.md REVERSE-ENGINEERING.md NOTICE LICENSE \
+          CHANGELOG.md SECURITY.md calib.pdf \
+          "$pkgdir/usr/share/doc/$pkgname/"
+}

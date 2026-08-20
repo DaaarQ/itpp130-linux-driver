@@ -1,0 +1,32 @@
+#!/bin/bash
+#
+# SPDX-License-Identifier: GPL-2.0-or-later
+#
+# gstoraster2tspl - CUPS filter wrapper for the Munbyn ITPP130 label printer:
+#
+#   PDF (job input)
+#     -> pdftopdf          (page size / custom size, copies, orientation)
+#     -> gstoraster        (PDF -> CUPS raster; ghostscript renders page
+#                           rotation correctly, like the vendor macOS driver)
+#     -> rastertolabel-itpp130 (CUPS raster -> TSPL)
+#
+# Registered in the PPD as:
+#   *cupsFilter: "application/pdf 0 gstoraster2tspl"
+#
+# Each stage after pdftopdf receives only 5 arguments so that it reads the
+# piped output from stdin instead of the original input file.
+#
+# pipefail makes the pipeline return a non-zero status when any stage fails,
+# so CUPS marks the job failed if pdftopdf or gstoraster breaks instead of
+# reporting false success.
+
+set -u -o pipefail
+
+if [ "$#" -ne 6 ] && [ "$#" -ne 7 ]; then
+  echo "ERROR: gstoraster2tspl job-id user title copies options [file]" >&2
+  exit 1
+fi
+
+# pdftopdf consumes the requested copy count.  Downstream stages read from
+# stdin and must see one copy or the final TSPL PRINT would multiply copies.
+pdftopdf "$@" | gstoraster "$1" "$2" "$3" 1 "$5" | rastertolabel-itpp130 "$1" "$2" "$3" 1 "$5"

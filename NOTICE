@@ -1,0 +1,48 @@
+NOTICE - provenance and licensing
+==================================
+
+This package is original work licensed under GPL-2.0-or-later.  Its printer
+protocol and configuration facts were determined by reverse engineering the
+vendor's publicly distributed macOS and Windows drivers for interoperability.
+
+1. Original work (GPL-2.0-or-later)
+-----------------------------------
+
+The following files are original work, written for this project, and are
+licensed under the GNU General Public License version 2 or (at your option)
+any later version:
+
+  rastertolabel-itpp130.c   CUPS raster -> TSPL filter
+  gstoraster2tspl           PDF -> raster -> TSPL wrapper script
+  install.sh, build-all.sh, packaging recipes, README.md,
+  REVERSE-ENGINEERING.md, tests/
+
+Provenance statement: the filter's behavior was reverse engineered from
+the vendor's official macOS driver binary "rastertolabel" (ITPP130 Mac
+Driver v1.5.8.1, an unstripped Mach-O CUPS filter) and cross-checked
+against the Windows driver's Munbyn_ITPP130.DDD data file and the
+output of cups-filters' pdftotspl on the same printer.  The C code is a
+reimplementation of the observed protocol behavior; no vendor source
+code was copied.  The reverse engineering was performed for
+interoperability with a printer the user owns; the legal position of
+such reverse engineering varies by jurisdiction.
+
+2. The PPD
+----------
+
+ITPP130-Label-printer.ppd is original work written for this project.
+Its factual content - media sizes, option choices, defaults and TSPL
+behaviour - was determined by reverse engineering the printer's vendor
+drivers (see REVERSE-ENGINEERING.md).  Media keywords use their actual
+PostScript dimensions for CUPS conformance.  It does not reproduce the
+vendor PPD's expression (no translations, font tables or original
+commentary).  It is covered by this project's GPL-2.0-or-later grant.
+If you prefer absolute certainty about the vendor's redistribution
+terms, obtain the vendor's original PPD from the official driver
+package instead.
+
+3. Trademarks
+-------------
+
+ITPP130 and Munbyn are trademarks of their respective owners.  This
+project is not affiliated with or endorsed by Munbyn.

@@ -1,0 +1,8 @@
+.DS_Store
+/rastertolabel-itpp130
+/rastertolabel-itpp130.plist
+/rastertolabel-itpp130-sanitize.dSYM/
+/tests/fixtures/
+/tests/make_fixtures
+/dist/*
+!/dist/README.md

@@ -1,0 +1,25 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  ubuntu:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install --no-install-recommends \
+            cups-client dpkg-dev gcc libcups2-dev libcupsimage2-dev python3
+      - name: Compile and test
+        run: make check
+      - name: Run sanitizers
+        run: make sanitize
+      - name: Build and test Debian package
+        run: sh packaging/build-all.sh deb

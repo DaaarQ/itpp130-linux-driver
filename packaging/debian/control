@@ -1,0 +1,26 @@
+Package: itpp130-linux-driver
+Version: 1.0.1-1
+Section: utils
+Priority: optional
+Architecture: amd64
+Depends: libcups2 (>= 2.4) | libcups2t64 (>= 2.4),
+         libcupsimage2 (>= 2.4) | libcupsimage2t64 (>= 2.4),
+         cups (>= 2.4), cups-filters (>= 1.28.0), ghostscript,
+         libc6 (>= 2.34)
+Maintainer: DaaarQ <DaaarQ@users.noreply.github.com>
+Homepage: https://github.com/DaaarQ/itpp130-linux-driver
+Description: Linux CUPS driver for the Munbyn ITPP130 label printer (TSPL)
+ CUPS driver for the Munbyn ITPP130 / ITPP130B 4x6" thermal label printer
+ (203 dpi, 100 mm wide), reverse engineered from the vendor's official
+ macOS and Windows drivers.
+ .
+ The printer speaks TSPL. This package provides:
+  * rastertolabel-itpp130 - CUPS raster -> TSPL filter
+  * gstoraster2tspl       - PDF -> raster (ghostscript) -> TSPL wrapper
+  * ITPP130 PPD           - 46 label sizes + custom sizes, darkness, print
+                            speed, media tracking (gap/black-line/continuous),
+                            gap height/offset, rotation, horizontal/vertical
+                            offset, auto-dotted line mode
+ .
+ Usage:  lpadmin -p ITPP130 -E -v usb://Printer/ITPP130?serial=0000000 \
+         -m munbyn/ITPP130-Label-printer.ppd
