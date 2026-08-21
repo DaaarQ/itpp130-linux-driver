@@ -17,11 +17,12 @@
 *%  - The option names AdjustHoriaontal (sic) and AutoDotted choice
 *%    "Ture" (sic) are the vendor's original spellings; they are
 *%    load-bearing because the filter looks them up verbatim.
-*%  - DefaultAdjustVertical is 5 mm to compensate the printer's
-*%    sensor-to-printhead origin offset (see README.md).
+*%  - DefaultAdjustVertical is 0 mm (no origin shift).  Individual units
+*%    may have a small gap-sensor-to-printhead offset; tune it per printer
+*%    with the AdjustVertical option (see README.md).
 *%
 *FormatVersion: "4.3"
-*FileVersion: "2.1"
+*FileVersion: "2.2"
 *LanguageVersion: English
 *LanguageEncoding: ISOLatin1
 *PCFileName: "ITPP130.PPD"
@@ -379,7 +380,7 @@
 *CloseUI: *AdjustHoriaontal
 *OpenUI *AdjustVertical/Vertical Offset: PickOne
 *OrderDependency: 10 AnySetup *AdjustVertical
-*DefaultAdjustVertical: 5
+*DefaultAdjustVertical: 0
 *AdjustVertical -20/-20mm: ""
 *AdjustVertical -19/-19mm: ""
 *AdjustVertical -18/-18mm: ""

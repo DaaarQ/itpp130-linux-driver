@@ -28,7 +28,7 @@
 #
 set -e
 
-VER="1.0.2"
+VER="1.0.3"
 NAME="itpp130-linux-driver"
 TARGET="${1:-all}"
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"

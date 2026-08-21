@@ -145,7 +145,7 @@ lp -d ITPP130 -o landscape a.pdf                   # rotated content
 | `GapOrMarkOffset` | 0-10 mm (0) | Gap or mark offset |
 | `Rotate` | 0/180/90/270 (0) | Printer-side rotation (TSPL `DIRECTION`) |
 | `AdjustHoriaontal` | -20..20 mm (0) | Horizontal origin shift |
-| `AdjustVertical` | -20..20 mm (5) | Vertical origin shift (see above) |
+| `AdjustVertical` | -20..20 mm (0) | Vertical origin shift (see above) |
 | `AutoDotted` | 0/1 (0) | Blur-compensation line mode |
 | `landscape` | - | 90-degree rotated content |
 
@@ -181,25 +181,23 @@ Regenerate goldens after an intentional behavior change with
 
 ## Print position (top margin)
 
-The ITPP130's gap-mode print origin sits ~3.7 mm *above* the physical top
-of the label (sensor-to-printhead offset), so content prints several mm
-higher than designed: a label whose bitmap starts with 4-5 mm of white
-prints with ~0 top margin and an oversized bottom margin.
-
-The PPD ships with `DefaultAdjustVertical: 5` (5 mm), which compensates
-this offset and restores the design's margins (~5 mm top and bottom on a
-true 4x6" label).  Fine-tune per job or per queue with:
+The PPD ships with `DefaultAdjustVertical: 0` (no vertical shift), which
+prints labels with well-formed PDFs at their designed position on a true
+4x6" media.  Individual units can carry a small gap-sensor-to-printhead
+origin offset; if content prints slightly high or low, or clips at one
+edge, nudge the origin per job or per queue with:
 
 ```
-lp -o AdjustVertical=4 file.pdf     # 1 mm less compensation
-lpoptions -p ITPP130 -o AdjustVertical=6
+lp -o AdjustVertical=-3 file.pdf    # move content up 3 mm
+lp -o AdjustVertical=2 file.pdf     # move content down 2 mm
+lpoptions -p ITPP130 -o AdjustVertical=-3
 ```
 
-To measure the exact offset on your printer, print the calibration ruler
-(`calib.pdf` in the source tree) with `-o AdjustVertical=0`: the topmost
-ruler mark that is visible at the very top edge of the label is the raw
-offset; the compensated ruler (default 5 mm) should show the 0 mm mark
-just above the label edge with ~5 mm of white above it.
+Positive values move content *down* the label; negative values move it
+*up*.  To measure your printer's offset, print the calibration ruler
+(`calib.pdf` in the source tree) with `-o AdjustVertical=0`: read the
+ruler mark sitting at the very top edge of the label and set
+`AdjustVertical` to the negative of that value to center the design.
 
 Horizontal positioning (`AdjustHoriaontal`) is available for centering if
 the media is wider than 100 mm.

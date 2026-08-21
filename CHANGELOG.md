@@ -2,6 +2,13 @@
 
 All notable changes to this project are documented here.
 
+## 1.0.3 - 2026-08-21
+
+- Change the default `AdjustVertical` from 5 mm to 0 mm (no vertical origin
+  shift).  Well-formed 4x6" label PDFs now print at their designed position
+  out of the box; per-printer sensor offsets are corrected with the
+  `AdjustVertical` option as needed.
+
 ## 1.0.2 - 2026-08-21
 
 - Remove the inert `MediaMethod` PPD option from this direct-thermal-only
