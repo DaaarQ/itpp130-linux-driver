@@ -4,5 +4,4 @@
 /rastertolabel-itpp130-sanitize.dSYM/
 /tests/fixtures/
 /tests/make_fixtures
-/dist/*
-!/dist/README.md
+/dist/
