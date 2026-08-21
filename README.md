@@ -21,8 +21,8 @@ The vendor filter selects its output language from the PPD `*cupsModelNumber`:
 
 The ITPP130 PPD ships with `*cupsModelNumber: 20`, so the printer speaks
 **TSPL** (TSPL2 dialect; confirmed independently by the Windows driver's
-`.DDD` file, which is labelled "TSPL", and by the TSPL the old generic
-`pdftotspl` setup was already sending to this printer).
+`.DDD` file, which is labelled "TSPL", and by comparison with an independent
+`pdftotspl` reference stream).
 
 ### Job stream produced per label (exact vendor sequence)
 
@@ -45,9 +45,9 @@ PRINT 1,<copies>
 ```
 
 Raster conversion (vendor `_OutputLine` model-20 path): the CUPS raster
-pipeline on this server writes dark pixels with low byte values
+pipeline writes dark pixels with low byte values
 (text = 0x00, background = 0xFF) and TSPL bitmap data uses 0 for black
-(verified against the known-good `pdftotspl` output).  A source pixel
+(verified against an independent `pdftotspl` reference stream). A source pixel
 >= 201 stays white; anything darker prints black.  The final byte of each
 row is padded with white.
 
@@ -65,29 +65,29 @@ row is padded with white.
 - `pdftopdf` applies the requested page size (including `Custom.WxH`),
   copy count and orientation to the PDF.
 - `gstoraster` (Ghostscript) renders PDF -> CUPS raster and applies page
-  rotation (landscape) correctly.  The poppler-based `pdftoraster` shipped
-  with cups-filters 1.28.17 on this server renders landscape jobs
-  non-uniformly scaled (broken geometry); ghostscript does not.
+  rotation (landscape) correctly. Testing found non-uniform landscape scaling
+  with the poppler-based `pdftoraster`; Ghostscript preserved the geometry.
   Ghostscript-based rasterization is also what the vendor macOS driver
   effectively uses, so output matches the vendor driver.
 
-## Install (Debian/Proxmox, CUPS 2.4)
+## Install from source
+
+Install a C compiler, CUPS development headers, Ghostscript, cups-filters and
+Python 3 using the distribution's package manager, then run:
 
 ```
-apt-get install gcc libcups2-dev libcupsimage2-dev ghostscript cups-client \
-  cups-filters python3
-./install.sh [queue-name]        # default queue: Munbyn-ITPP130B
+sudo ./install.sh [queue-name]
 ```
 
-The queue's device URI (e.g. `usb://Printer/ITPP130?serial=0000000`) is
-preserved. The installer runs the regression suite before replacing files.
+The queue's existing device URI is preserved. The installer runs the
+regression suite before replacing files.
 For packaged installs, prefer `apt install ./itpp130-linux-driver_*.deb` or
 `dnf install ./itpp130-linux-driver-*.rpm`.
 
 ## Packages / prebuilt binaries
 
-`packaging/build-all.sh` builds natively per distro (run it inside the
-target distro's build host/LXC): tar.gz (source + binary), .deb, .rpm and
+`packaging/build-all.sh` builds natively for the current distribution:
+tar.gz (source + binary), .deb, .rpm and
 Arch .pkg.tar.zst, with the architecture detected from the build host
 (x86_64, aarch64/arm64, armhf/armv7h, ...) — Raspberry Pi print servers
 included.  The source build emits checksum-pinned Arch (`PKGBUILD`) and
@@ -100,6 +100,14 @@ libcups/libcupsimage/glibc; each package declares its real requirements
 so a mismatched host is rejected at install time rather than crashing at
 runtime.  For anything else, rebuild from the source tarball — the driver
 is a single small C file.
+
+## AI assistance disclosure
+
+AI systems assisted with reverse-engineering analysis, code review,
+documentation, test generation and packaging. The maintainer reviewed the
+result and validated it against the vendor artifacts, reproducible tests,
+native package builds and physical printer output. AI-generated conclusions
+should not be treated as authoritative without independent review.
 
 ## Licensing / provenance
 
@@ -114,15 +122,15 @@ provenance statement.
 ## Usage
 
 ```
-lp -d Munbyn-ITPP130B label.pdf
-lp -d Munbyn-ITPP130B -o PageSize=w283h212 label.pdf       # 4x3" label
-lp -d Munbyn-ITPP130B -o PageSize=Custom.283x850 label.pdf # 100x300mm
-lp -d Munbyn-ITPP130B -o Darkness=12 -o zePrintRate=6 a.pdf
-lp -d Munbyn-ITPP130B -o AdjustVertical=5 -o AdjustHoriaontal=-2 a.pdf
-lp -d Munbyn-ITPP130B -o zeMediaTracking=Continuous a.pdf # continuous media
-lp -d Munbyn-ITPP130B -o zeMediaTracking=BLine -o GapOrMarkHeight=5 a.pdf
-lp -d Munbyn-ITPP130B -o Rotate=1 a.pdf                    # 180 deg (DIRECTION)
-lp -d Munbyn-ITPP130B -o landscape a.pdf                   # rotated content
+lp -d ITPP130 label.pdf
+lp -d ITPP130 -o PageSize=w283h212 label.pdf       # 4x3" label
+lp -d ITPP130 -o PageSize=Custom.283x850 label.pdf # 100x300mm
+lp -d ITPP130 -o Darkness=12 -o zePrintRate=6 a.pdf
+lp -d ITPP130 -o AdjustVertical=5 -o AdjustHoriaontal=-2 a.pdf
+lp -d ITPP130 -o zeMediaTracking=Continuous a.pdf # continuous media
+lp -d ITPP130 -o zeMediaTracking=BLine -o GapOrMarkHeight=5 a.pdf
+lp -d ITPP130 -o Rotate=1 a.pdf                    # 180 deg (DIRECTION)
+lp -d ITPP130 -o landscape a.pdf                   # rotated content
 ```
 
 ### PPD options
@@ -184,7 +192,7 @@ true 4x6" label).  Fine-tune per job or per queue with:
 
 ```
 lp -o AdjustVertical=4 file.pdf     # 1 mm less compensation
-lpoptions -p Munbyn-ITPP130B -o AdjustVertical=6
+lpoptions -p ITPP130 -o AdjustVertical=6
 ```
 
 To measure the exact offset on your printer, print the calibration ruler
@@ -198,8 +206,8 @@ the media is wider than 100 mm.
 
 ## Notes / verification
 
-- Verified bit-exact against the previously-working `pdftotspl` queue for
-  the same input (text rows, polarity, page framing).
+- Verified bit-exact against captured vendor output and an independent
+  `pdftotspl` reference stream (text rows, polarity and page framing).
 - Tested through the real CUPS pipeline: text, PNG, multi-page PDF,
   landscape (correct rotated geometry, measured line positions),
   custom sizes up to 100x300mm, copies, and every PPD option.
@@ -212,7 +220,7 @@ the media is wider than 100 mm.
 Back up an existing queue PPD before installation if you may need it later:
 
 ```sh
-sudo cp /etc/cups/ppd/Munbyn-ITPP130B.ppd ./Munbyn-ITPP130B.ppd.backup
+sudo cp /etc/cups/ppd/ITPP130.ppd ./ITPP130.ppd.backup
 ```
 
 Restore it with your distribution's CUPS administration tools or reinstall

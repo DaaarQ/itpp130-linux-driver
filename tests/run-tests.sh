@@ -45,9 +45,9 @@ if [ "${1:-}" = "--regenerate" ]; then
   shift
   FILTER="${1:-$ROOT/rastertolabel-itpp130}"
   echo "==> regenerating goldens"
-  "$FILTER" 1 joe t 1 "PageSize=w283h425" "$FIX/test.ras" 2>/dev/null \
+  "$FILTER" 1 test-user t 1 "PageSize=w283h425" "$FIX/test.ras" 2>/dev/null \
     > "$GOLDEN/default.tspl"
-  "$FILTER" 1 joe t 1 "PageSize=w283h425 Darkness=12 zePrintRate=2 \
+  "$FILTER" 1 test-user t 1 "PageSize=w283h425 Darkness=12 zePrintRate=2 \
 AdjustVertical=3 AdjustHoriaontal=-2 zeMediaTracking=Continuous Rotate=1" \
     "$FIX/test.ras" 2>/dev/null > "$GOLDEN/options.tspl"
   echo "done"
@@ -70,18 +70,18 @@ check()
 }
 
 # --- 1. default options vs golden -------------------------------------
-diff <("$FILTER" 1 joe t 1 "PageSize=w283h425" "$FIX/test.ras" 2>/dev/null) \
+diff <("$FILTER" 1 test-user t 1 "PageSize=w283h425" "$FIX/test.ras" 2>/dev/null) \
      "$GOLDEN/default.tspl" >/dev/null 2>&1
 check "default output matches golden" $?
 
 # --- 2. options vs golden ---------------------------------------------
-diff <("$FILTER" 1 joe t 1 "PageSize=w283h425 Darkness=12 zePrintRate=2 \
+diff <("$FILTER" 1 test-user t 1 "PageSize=w283h425 Darkness=12 zePrintRate=2 \
 AdjustVertical=3 AdjustHoriaontal=-2 zeMediaTracking=Continuous Rotate=1" \
        "$FIX/test.ras" 2>/dev/null) "$GOLDEN/options.tspl" >/dev/null 2>&1
 check "option output matches golden" $?
 
 # --- 3. bitmap data polarity & threshold (rows of test.ras) -----------
-"$FILTER" 1 joe t 1 "PageSize=w283h425" "$FIX/test.ras" 2>/dev/null |
+"$FILTER" 1 test-user t 1 "PageSize=w283h425" "$FIX/test.ras" 2>/dev/null |
 python3 -c '
 import sys, re
 d = sys.stdin.buffer.read()
@@ -109,7 +109,7 @@ print("ok")
 check "threshold/polarity/framing" $?
 
 # --- 4. 1-bit path: verbatim bytes + tail padding ---------------------
-"$FILTER" 1 joe t 1 "PageSize=w283h425" "$FIX/onebit.ras" 2>/dev/null |
+"$FILTER" 1 test-user t 1 "PageSize=w283h425" "$FIX/onebit.ras" 2>/dev/null |
 python3 -c '
 import sys, re
 d = sys.stdin.buffer.read()
@@ -143,7 +143,7 @@ for fx in badcolor.ras badspace.ras badbpl.ras badlargebpl.ras badres.ras; do
     check "fixture exists: $fx" 1
     continue
   fi
-  err=$("$FILTER" 1 joe t 1 "PageSize=w283h425" "$FIX/$fx" 2>&1 >/dev/null)
+  err=$("$FILTER" 1 test-user t 1 "PageSize=w283h425" "$FIX/$fx" 2>&1 >/dev/null)
   rc=$?
   if [ $rc -ne 0 ] && echo "$err" | grep -Eq "$expected"; then
     check "reject $fx" 0
@@ -153,7 +153,7 @@ for fx in badcolor.ras badspace.ras badbpl.ras badlargebpl.ras badres.ras; do
 done
 
 # --- 6. bad second page must fail the whole job -----------------------
-"$FILTER" 1 joe t 1 "PageSize=w283h425" "$FIX/multipage_bad.ras" \
+"$FILTER" 1 test-user t 1 "PageSize=w283h425" "$FIX/multipage_bad.ras" \
   > "$TEST_TMP/multipage.tspl" 2> "$TEST_TMP/multipage.err"
 rc=$?
 if [ $rc -ne 0 ] && grep -q "Unsupported raster colorspace" \
@@ -165,7 +165,7 @@ else
 fi
 
 # --- 7. requested copies are sent to TSPL -----------------------------
-"$FILTER" 1 joe t 3 "PageSize=w283h425" "$FIX/test.ras" \
+"$FILTER" 1 test-user t 3 "PageSize=w283h425" "$FIX/test.ras" \
   > "$TEST_TMP/copies.tspl" 2>/dev/null
 rc=$?
 if [ $rc -eq 0 ] && \
@@ -177,7 +177,7 @@ fi
 
 # Piped raster data has already had copies expanded by pdftopdf.  It must
 # never apply argv[4] again or PDF jobs would print copies squared.
-"$FILTER" 1 joe t 3 "PageSize=w283h425" \
+"$FILTER" 1 test-user t 3 "PageSize=w283h425" \
   < "$FIX/test.ras" > "$TEST_TMP/piped-copies.tspl" 2>/dev/null
 rc=$?
 if [ $rc -eq 0 ] && \
@@ -188,7 +188,7 @@ else
 fi
 
 # --- 8. truncated input: padded + clean termination + rc=1 ------------
-"$FILTER" 1 joe t 1 "PageSize=w283h425" "$FIX/truncated.ras" \
+"$FILTER" 1 test-user t 1 "PageSize=w283h425" "$FIX/truncated.ras" \
   > "$TEST_TMP/truncated.tspl" 2>/dev/null
 rc=$?
 ok=1
@@ -218,7 +218,7 @@ fi
 CANCEL_FIFO="$TEST_TMP/cancel-fifo"
 CANCEL_TSPL="$TEST_TMP/cancel.tspl"
 mkfifo "$CANCEL_FIFO"
-"$FILTER" 1 joe t 1 "PageSize=w283h425" < "$CANCEL_FIFO" \
+"$FILTER" 1 test-user t 1 "PageSize=w283h425" < "$CANCEL_FIFO" \
   > "$CANCEL_TSPL" 2> "$TEST_TMP/cancel.err" &
 pid=$!
 {

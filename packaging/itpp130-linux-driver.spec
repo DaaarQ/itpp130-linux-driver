@@ -38,7 +38,7 @@ The printer speaks TSPL (model number 20). This package provides:
                             gap height/offset, rotation, horizontal/vertical
                             offset, auto-dotted line mode
 
-Usage:  lpadmin -p ITPP130 -E -v usb://Printer/ITPP130?serial=0000000 \
+Usage:  lpadmin -p ITPP130 -E -v usb://Printer/ITPP130 \
         -m munbyn/ITPP130-Label-printer.ppd
 
 %prep

@@ -8,7 +8,7 @@
 #   /usr/lib/cups/filter/gstoraster2tspl         (PDF -> raster -> TSPL wrapper)
 #   /usr/share/cups/model/munbyn/ITPP130-Label-printer.ppd
 #
-# Then re-configures the queue <QUEUE> (default: Munbyn-ITPP130B) to use the
+# Then re-configures the queue <QUEUE> (default: ITPP130) to use the
 # new PPD, keeping its existing device URI (e.g. usb://Printer/ITPP130?...).
 #
 # Source-install requirements: gcc, libcups2-dev, libcupsimage2-dev,
@@ -19,7 +19,7 @@
 
 set -e
 
-QUEUE="${1:-Munbyn-ITPP130B}"
+QUEUE="${1:-ITPP130}"
 DIR="$(cd "$(dirname "$0")" && pwd)"
 if command -v cups-config >/dev/null 2>&1; then
     CUPS_SERVERBIN="$(cups-config --serverbin)"
@@ -67,7 +67,7 @@ echo "==> Reconfiguring queue '$QUEUE' (device URI is preserved)"
 DEVICE="$(lpstat -v "$QUEUE" 2>/dev/null | sed -n 's/.*: \(.*\)/\1/p')"
 if [ -z "$DEVICE" ]; then
     echo "ERROR: queue '$QUEUE' not found; create it with:"
-    echo "  lpadmin -p '$QUEUE' -E -v usb://Printer/ITPP130?serial=0000000 -m munbyn/ITPP130-Label-printer.ppd"
+    echo "  lpadmin -p '$QUEUE' -E -v usb://Printer/ITPP130 -m munbyn/ITPP130-Label-printer.ppd"
     exit 1
 fi
 echo "    device: $DEVICE"

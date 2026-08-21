@@ -67,8 +67,8 @@ out bit = (src >= 201) ? 1 : 0
 The CUPS raster produced by cups-filters on Linux (and effectively by the
 macOS pipeline too) stores dark pixels with LOW byte values
 (text = 0x00, background = 0xFF), and TSPL BITMAP data uses 0 = black
-(verified bit-for-bit against cups-filters `pdftotspl` output on the same
-printer).  Pixels below ~79% brightness therefore print black; the final
+(verified bit-for-bit against an independent cups-filters `pdftotspl`
+reference stream). Pixels below ~79% brightness therefore print black; the final
 byte of each row is padded with white (the vendor pads bits beyond
 cupsWidth the same way).
 
@@ -82,11 +82,9 @@ The PPD uses `*cupsFilter: "application/pdf 0 gstoraster2tspl"` where
 * `pdftopdf` applies requested page size (incl. `PageSize=Custom.WxH`),
   copies and orientation.
 * `gstoraster` (Ghostscript) renders PDF -> CUPS raster with correct page
-  rotation.  The poppler-based `pdftoraster` shipped with cups-filters
-  1.28.17 renders landscape pages with non-uniform scaling (broken
-  geometry, measured: a 2pt line rendered at the wrong position with
-  wrong thickness); ghostscript renders it correctly, matching the
-  vendor macOS rendering path.
+  rotation. Testing found non-uniform landscape scaling in the poppler-based
+  `pdftoraster` path; Ghostscript preserved the measured geometry and matched
+  the vendor macOS rendering path.
 
 `application/vnd.cups-raster` jobs (e.g. from `imagetoraster`) go directly
 through `rastertolabel-itpp130`.

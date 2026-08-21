@@ -21,11 +21,11 @@ Provenance statement: the filter's behavior was reverse engineered from
 the vendor's official macOS driver binary "rastertolabel" (ITPP130 Mac
 Driver v1.5.8.1, an unstripped Mach-O CUPS filter) and cross-checked
 against the Windows driver's Munbyn_ITPP130.DDD data file and the
-output of cups-filters' pdftotspl on the same printer.  The C code is a
+output of cups-filters' pdftotspl in an independent comparison. The C code is a
 reimplementation of the observed protocol behavior; no vendor source
 code was copied.  The reverse engineering was performed for
-interoperability with a printer the user owns; the legal position of
-such reverse engineering varies by jurisdiction.
+interoperability with supported hardware; the legal position of such reverse
+engineering varies by jurisdiction.
 
 2. The PPD
 ----------

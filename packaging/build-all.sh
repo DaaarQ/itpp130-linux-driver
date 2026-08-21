@@ -11,8 +11,8 @@
 #   rpm             - RHEL/Fedora/openSUSE .rpm (rpmbuild builds natively)
 #   arch            - Arch Linux .pkg.tar.zst
 #
-# Run natively on each distro's build host (LXC/VM/container) so that the
-# filter binary is compiled against that distro's glibc and CUPS libraries.
+# Run on the target distribution so the filter binary is compiled against
+# that distribution's glibc and CUPS libraries.
 #
 #   Debian/Ubuntu:  apt-get install gcc libcups2-dev libcupsimage2-dev \
 #                   dpkg-dev zstd libarchive-tools python3
