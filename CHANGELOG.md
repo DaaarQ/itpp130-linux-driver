@@ -2,6 +2,12 @@
 
 All notable changes to this project are documented here.
 
+## 1.0.2 - 2026-08-21
+
+- Remove the inert `MediaMethod` PPD option from this direct-thermal-only
+  printer so every exposed setting has an observable effect.
+- Name and document raster dimension and row-allocation safety limits.
+
 ## 1.0.1 - 2026-08-20
 
 - Reject malformed raster formats, unsafe row layouts, unsupported

@@ -6,7 +6,7 @@
 
 Summary: Linux CUPS driver for the Munbyn ITPP130 label printer (TSPL)
 Name: itpp130-linux-driver
-Version: 1.0.1
+Version: 1.0.2
 Release: 1
 # The filter, wrapper, PPD, documentation and packaging are original work
 # licensed GPL-2.0-or-later; see %doc NOTICE for reverse-engineering
@@ -77,6 +77,10 @@ install -m 644 calib.pdf %{buildroot}%{_defaultdocdir}/%{name}/
 %doc %{_defaultdocdir}/%{name}/
 
 %changelog
+* Fri Aug 21 2026 DaaarQ - 1.0.2-1
+- Remove the inert MediaMethod PPD option.
+- Document and centralize raster safety limits.
+
 * Thu Aug 20 2026 DaaarQ - 1.0.1-1
 - Validate raster headers and propagate partial-job failures.
 - Correct 1-bit tail padding and honor requested copies.

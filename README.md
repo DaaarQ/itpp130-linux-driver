@@ -139,7 +139,6 @@ lp -d Munbyn-ITPP130B -o landscape a.pdf                   # rotated content
 | `AdjustHoriaontal` | -20..20 mm (0) | Horizontal origin shift |
 | `AdjustVertical` | -20..20 mm (5) | Vertical origin shift (see above) |
 | `AutoDotted` | 0/1 (0) | Blur-compensation line mode |
-| `MediaMethod` | Normal / Direct | **Inert** - the ITPP130 is direct-thermal-only; kept for job compatibility |
 | `landscape` | - | 90-degree rotated content |
 
 Note: `AdjustHoriaontal` (sic, missing 'z') and `AutoDotted`'s choice label

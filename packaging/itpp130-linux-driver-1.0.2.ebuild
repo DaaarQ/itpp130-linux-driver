@@ -1,5 +1,6 @@
 # Copyright 2026 DaaarQ
 # Distributed under the terms of the GNU General Public License v2
+# Package version is supplied by the ebuild filename through PV.
 
 EAPI=8
 

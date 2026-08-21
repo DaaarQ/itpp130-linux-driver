@@ -14,8 +14,6 @@
 *% Notes:
 *%  - *cupsModelNumber: 20 selects the TSPL output mode in the
 *%    rastertolabel-itpp130 filter (see REVERSE-ENGINEERING.md).
-*%  - MediaMethod (Normal/Direct) is intentionally inert: the ITPP130 is
-*%    a direct-thermal-only printer, so there is no mode toggle to send.
 *%  - The option names AdjustHoriaontal (sic) and AutoDotted choice
 *%    "Ture" (sic) are the vendor's original spellings; they are
 *%    load-bearing because the filter looks them up verbatim.
@@ -23,7 +21,7 @@
 *%    sensor-to-printhead origin offset (see README.md).
 *%
 *FormatVersion: "4.3"
-*FileVersion: "2.0"
+*FileVersion: "2.1"
 *LanguageVersion: English
 *LanguageEncoding: ISOLatin1
 *PCFileName: "ITPP130.PPD"
@@ -297,12 +295,6 @@
 *GapOrMarkOffset 9/9mm: ""
 *GapOrMarkOffset 10/10mm: ""
 *CloseUI: *GapOrMarkOffset
-*OpenUI *MediaMethod/Method: PickOne
-*OrderDependency: 10 AnySetup *MediaMethod
-*DefaultMediaMethod: Normal
-*MediaMethod Normal/Use Currently Printer Setting: ""
-*MediaMethod Direct/Direct Thermal: ""
-*CloseUI: *MediaMethod
 *OpenUI *Darkness/Darkness: PickOne
 *OrderDependency: 10 AnySetup *Darkness
 *DefaultDarkness: 8

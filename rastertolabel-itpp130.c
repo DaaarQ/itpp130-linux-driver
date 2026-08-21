@@ -67,6 +67,16 @@
 #define WAKE_BURST 1024        /* leading zero bytes sent at each page start */
 #define THRESHOLD  201         /* 8bpp pixels >= this stay white */
 
+/* Hardware/PPD bounds.  The 832-dot ceiling covers the 104 mm printhead at
+ * 203 dpi (the PPD advertises MaxMediaWidth 294 pt); 16000 dots likewise
+ * covers its 5670 pt maximum height with rounding slack. */
+#define MAX_RASTER_WIDTH_DOTS  832U
+#define MAX_RASTER_HEIGHT_DOTS 16000U
+
+/* Defensive allocation/read ceiling for malformed raster headers.  Valid
+ * 1-bit and 8-bit jobs at the maximum head width need at most 832 bytes. */
+#define MAX_RASTER_ROW_BYTES   4096U
+
 static volatile sig_atomic_t Canceled = 0;
 
 static int ModelNumber = 0;    /* from PPD *cupsModelNumber */
@@ -419,14 +429,13 @@ main(int argc, char *argv[])
       pages_error = 1;
       break;
     }
-    /* Printer limits from the PPD: MaxMediaWidth 294pt / MaxMediaHeight
-     * 5670pt at 203 dpi, with rounding slack. */
-    if (h.cupsWidth == 0 || h.cupsWidth > 832 ||
-        h.cupsHeight == 0 || h.cupsHeight > 16000)
+    if (h.cupsWidth == 0 || h.cupsWidth > MAX_RASTER_WIDTH_DOTS ||
+        h.cupsHeight == 0 || h.cupsHeight > MAX_RASTER_HEIGHT_DOTS)
     {
       fprintf(stderr, "ERROR: Raster dimensions %u x %u outside the "
-              "supported range (1..832 x 1..16000 dots).\n",
-              h.cupsWidth, h.cupsHeight);
+              "supported range (1..%u x 1..%u dots).\n",
+              h.cupsWidth, h.cupsHeight, MAX_RASTER_WIDTH_DOTS,
+              MAX_RASTER_HEIGHT_DOTS);
       pages_error = 1;
       break;
     }
@@ -442,10 +451,11 @@ main(int argc, char *argv[])
         pages_error = 1;
         break;
       }
-      if (h.cupsBytesPerLine > 4096)
+      if (h.cupsBytesPerLine > MAX_RASTER_ROW_BYTES)
       {
         fprintf(stderr, "ERROR: cupsBytesPerLine %u exceeds the safe row "
-                "limit (4096).\n", h.cupsBytesPerLine);
+                "limit (%u).\n", h.cupsBytesPerLine,
+                MAX_RASTER_ROW_BYTES);
         pages_error = 1;
         break;
       }
@@ -529,7 +539,7 @@ main(int argc, char *argv[])
      * terminates cleanly. */
     while (emitted < h.cupsHeight)
     {
-      static unsigned char white[4096];
+      static unsigned char white[MAX_RASTER_ROW_BYTES];
       static int white_inited = 0;
       unsigned wb = (h.cupsWidth + 7) / 8;
 
